@@ -1,17 +1,25 @@
-import { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { useEffect, useState } from 'react';
+import { useNavigate, useParams } from 'react-router-dom';
 import { Card, Input, Button, Typography } from '@material-tailwind/react';
-import { IUserData } from '../../rtk/types';
-import { useAddUserMutation } from '../../rtk/user/userSlice';
+import { useGetUserQuery, useUpdateUserMutation } from '../../rtk/user/userSlice';
+import { IUser } from '../../rtk/types';
 
-export const CreatePage: React.FC = () => {
+export const EditPage: React.FC = () => {
+  const { id } = useParams();
   const navigate = useNavigate();
-  const [addUser] = useAddUserMutation();
-  const [user, setUser] = useState<IUserData>({ name: '', email: '' });
+  const { data } = useGetUserQuery(id!);
+  const [updateUser] = useUpdateUserMutation();
+  const [user, setUser] = useState<IUser>({ id: id!, name: '', email: '' });
 
-  const onSubmitHandler = async(e: React.FormEvent<HTMLFormElement>) => {
+  useEffect(() => {
+    if (data) {
+      setUser({ ...user, name: data.name, email: data.email });
+    }
+  }, [data]);
+
+  const onSubmitHandler = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    await addUser(user);
+    await updateUser(user);
     navigate('/');
   };
 
@@ -35,7 +43,7 @@ export const CreatePage: React.FC = () => {
           onPointerEnterCapture={null}
           onPointerLeaveCapture={null}
         >
-          Add User
+          Edit User
         </Typography>
         <form
           className="mt-8 mb-2 w-80 max-w-screen-lg sm:w-96"
@@ -63,6 +71,7 @@ export const CreatePage: React.FC = () => {
               onPointerLeaveCapture={undefined}
               crossOrigin={undefined}
               name="name"
+              value={user.name}
               onChange={onChangeHandler}
             />
             <Typography
@@ -86,6 +95,7 @@ export const CreatePage: React.FC = () => {
               onPointerLeaveCapture={undefined}
               crossOrigin={undefined}
               name="email"
+              value={user.email}
               onChange={onChangeHandler}
             />
           </div>
@@ -98,7 +108,7 @@ export const CreatePage: React.FC = () => {
             onPointerLeaveCapture={undefined}
             type="submit"
           >
-            Create
+            Update
           </Button>
         </form>
       </Card>
