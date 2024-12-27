@@ -1,13 +1,18 @@
-import { Card, Input, Button, Typography } from '@material-tailwind/react';
 import { useState } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { Card, Input, Button, Typography } from '@material-tailwind/react';
 import { IUserData } from '../../rtk/types';
+import { useAddUserMutation } from '../../rtk/user/userSlice';
 
 export const CreatePage: React.FC = () => {
+  const navigate = useNavigate();
+  const [addUser] = useAddUserMutation();
   const [user, setUser] = useState<IUserData>({ name: '', email: '' });
 
-  const onSubmitHandler = (e: React.FormEvent<HTMLFormElement>) => {
+  const onSubmitHandler = async(e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
-    console.log('hello');
+    await addUser(user);
+    navigate('/');
   };
 
   const onChangeHandler = (e: React.ChangeEvent<HTMLInputElement>) => {
