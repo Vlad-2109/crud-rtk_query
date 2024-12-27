@@ -1,8 +1,13 @@
 import { Link } from 'react-router-dom';
-import { useGetUsersQuery } from '../../rtk/user/userSlice';
+import { useGetUsersQuery, useDeleteUserMutation } from '../../rtk/user/userSlice';
 
 export const Users: React.FC = () => {
   const { data: users, isLoading, isSuccess, isError } = useGetUsersQuery();
+  const [deleteUser] = useDeleteUserMutation();
+
+  const handleDelete = (id: string) => { 
+    deleteUser(id);
+  }
 
   return (
     <div className="flex justify-center p-3">
@@ -14,7 +19,7 @@ export const Users: React.FC = () => {
             <h4>{user.name}</h4>
             <h4>{user.email}</h4>
             <div className='flex gap-2 self-center'>
-                <button className="text-white px-3 py-1 bg-red-600 rounded-lg">Delete</button>
+                <button className="text-white px-3 py-1 bg-red-600 rounded-lg" onClick={() => handleDelete(user.id)}>Delete</button>
                 <Link to={`/edit/${user.id}`} className="text-white px-3 py-1 bg-green-600 rounded-lg">Edit</Link>
             </div>
           </div>
